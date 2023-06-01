@@ -1,8 +1,6 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.TreeMap;
+import java.util.*;
 
 public class MapaFenicios {
     private static char[][] readMapFile(String filePath) {
@@ -52,11 +50,11 @@ public class MapaFenicios {
             }
         }
 
-        // TESTE SE A MAPA DAS POSICOES FUNCIONOU
-        for (Integer digit : numberPositions.keySet()) {
-            Tuple position = numberPositions.get(digit);
-            System.out.println("Number " + digit + " at position (" + position.getRow() + ", " + position.getColumn() + ")");
-        }
+//        // TESTE SE A MAPA DAS POSICOES FUNCIONOU
+//        for (Integer digit : numberPositions.keySet()) {
+//            Tuple position = numberPositions.get(digit);
+//            System.out.println("Number " + digit + " at position (" + position.getRow() + ", " + position.getColumn() + ")");
+//        }
 
         return numberPositions;
     }
@@ -111,7 +109,7 @@ public class MapaFenicios {
 
                 // Check if the neighboring position is valid and not visited
                 if (newRow >= 0 && newRow < rows && newColumn >= 0 && newColumn < columns
-                        && !visited[newRow][newColumn]) {
+                        && !visited[newRow][newColumn] && matrix[newRow][newColumn] != '*') {
 
                     // Update the distance and enqueue the neighboring position
                     distance[newRow][newColumn] = distance[current.getRow()][current.getColumn()] + 1;
@@ -136,15 +134,30 @@ public class MapaFenicios {
 
         int totalDistance = 0;
         // Run BFS for each number in numberPositions
-        for (int i = 1; i < numberPositions.size() - 1; i++) {
-            Tuple start = numberPositions.get(i);
-            Tuple end = numberPositions.get(i + 1);
+        int i = 1;
+        List<Integer> positions = new ArrayList<>(numberPositions.keySet());
+        Integer currentKey = positions.get(i - 1);
 
-            int shortestDistance = findShortestPath(matrix, start, end);
-            totalDistance += shortestDistance;
-            // Do something with the shortestDistance, such as accumulating it for the overall path
-            // ...
+        while (i < positions.size()) {
+            Integer nextKey = positions.get(i);
+            Tuple current = numberPositions.get(currentKey);
+            Tuple next = numberPositions.get(nextKey);
+
+            int shortestDistance = findShortestPath(matrix, current, next);
+
+            if (shortestDistance == 0) {
+                numberPositions.remove(nextKey);
+                positions.remove(i);
+                System.out.printf("Rota não encontrada de (%d, %d) até (%d, %d)\n", current.getRow(), current.getColumn(), next.getRow(), next.getColumn());
+            } else {
+                totalDistance += shortestDistance;
+                currentKey = nextKey;
+                i++;
+                System.out.printf("Rota encontrada de (%d, %d) até (%d, %d)\n", current.getRow(), current.getColumn(), next.getRow(), next.getColumn());
+            }
         }
+
+
 
         System.out.println(totalDistance);
 
