@@ -1,8 +1,8 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.TreeMap;
 
 public class MapaFenicios {
     private static char[][] readMapFile(String filePath) {
@@ -39,22 +39,25 @@ public class MapaFenicios {
         return matrix;
     }
 
-    private static ArrayList<Tuple> getPositions(char[][] matrix) {
-        ArrayList<Tuple> numberPositions = new ArrayList<>();
+    private static TreeMap<Integer, Tuple> getPositions(char[][] matrix) {
+        TreeMap<Integer, Tuple> numberPositions = new TreeMap<>();
 
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
                 char element = matrix[i][j];
                 if (Character.isDigit(element)) {
-                    numberPositions.add(new Tuple(i, j));
+                    int digit = Character.getNumericValue(element);
+                    numberPositions.put(digit, new Tuple(i, j));
                 }
             }
         }
 
-        // TESTE SE LISTA DAS POSICOES FUNCIONOU
-        for (Tuple position : numberPositions) {
-            System.out.println("Number at position (" + position.getRow() + ", " + position.getColumn() + ")");
+        // TESTE SE A MAPA DAS POSICOES FUNCIONOU
+        for (Integer digit : numberPositions.keySet()) {
+            Tuple position = numberPositions.get(digit);
+            System.out.println("Number " + digit + " at position (" + position.getRow() + ", " + position.getColumn() + ")");
         }
+
         return numberPositions;
     }
 
@@ -125,15 +128,15 @@ public class MapaFenicios {
 
     public static void main(String[] args) {
         // salvar os dados do arquivo em uma matriz de chars
-        String filePath = "mapa0.txt";
+        String filePath = "mapa1.txt";
         char[][] matrix = readMapFile(filePath);
 
         // salvar todas as posicoes dos portos em uma lista
-        ArrayList<Tuple> numberPositions = getPositions(matrix);
+        TreeMap<Integer, Tuple> numberPositions = getPositions(matrix);
 
         int totalDistance = 0;
         // Run BFS for each number in numberPositions
-        for (int i = 0; i < numberPositions.size() - 1; i++) {
+        for (int i = 1; i < numberPositions.size() - 1; i++) {
             Tuple start = numberPositions.get(i);
             Tuple end = numberPositions.get(i + 1);
 
