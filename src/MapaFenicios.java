@@ -69,7 +69,7 @@ public class MapaFenicios {
      * @param destino posicao de destino
      * @return distancia entre os dois pontos
      */
-    public static int achaMenorCaminho(char[][] matriz, Tuple origem, Tuple destino) {
+    private static int achaMenorCaminho(char[][] matriz, Tuple origem, Tuple destino) {
         int linhas = matriz.length;
         int colunas = matriz[0].length;
 
