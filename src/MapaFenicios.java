@@ -149,17 +149,17 @@ public class MapaFenicios {
 
             int menorCaminho = achaMenorCaminho(matriz, atual, proximo);
 
-            // se o menor caminho for 0, significa que não há caminho entre os portos
+            // se o menor caminho for 0, significa que não há caminho entre os portos,
             // então remove o porto atual da lista de portos e a proxima coordenada do dicionario
             if (menorCaminho == 0) {
                 posicaoPortos.remove(proxPorto);
                 posicoes.remove(i);
-                System.out.printf("Rota não encontrada de (%d, %d) até (%d, %d)\n", atual.getRow(), atual.getColumn(), proximo.getRow(), proximo.getColumn());
+                System.out.printf("Rota não encontrada de %s até %s\n", atual, proximo);
             } else {
                 caminhoTotal += menorCaminho;
                 portoAtual = proxPorto;
                 i++;
-                System.out.printf("Rota encontrada de (%d, %d) até (%d, %d)\n", atual.getRow(), atual.getColumn(), proximo.getRow(), proximo.getColumn());
+                System.out.printf("Rota encontrada de %s até %s\n", atual, proximo);
             }
         }
         System.out.println(caminhoTotal);
@@ -168,7 +168,6 @@ public class MapaFenicios {
 
 /**
  * Classe para representar as coordenadas dos mapas em tuplas (row, column)
- * Usada para facilitar a implementação do BFS
  */
 class Tuple {
     private int row;
@@ -185,5 +184,10 @@ class Tuple {
 
     public int getColumn() {
         return column;
+    }
+
+    @Override
+    public String toString() {
+        return "(" + row + ", " + column + ")";
     }
 }
