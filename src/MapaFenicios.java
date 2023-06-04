@@ -28,9 +28,9 @@ public class MapaFenicios {
             }
 
             // TESTE SE MATRIZ FICOU CERTA
-            for (int i = 0; i < matriz.length; i++) {
+            for (char[] chars : matriz) {
                 for (int j = 0; j < matriz[0].length; j++) {
-                    System.out.print(matriz[i][j] + " ");
+                    System.out.print(chars[j] + " ");
                 }
                 System.out.println();
             }
@@ -78,9 +78,7 @@ public class MapaFenicios {
 
         // inicializa a matriz de distancias com "infinito"
         for (int i = 0; i < linhas; i++) {
-            for (int j = 0; j < colunas; j++) {
-                distancia[i][j] = Integer.MAX_VALUE;
-            }
+            Arrays.fill(distancia[i], Integer.MAX_VALUE);
         }
 
         // Vetores para explorar as posições vizinhas
@@ -93,17 +91,17 @@ public class MapaFenicios {
 
         // Marcar a origem como visitada e com distancia 0
         fila.add(origem);
-        visitados[origem.getRow()][origem.getColumn()] = true;
-        distancia[origem.getRow()][origem.getColumn()] = 0;
+        visitados[origem.row()][origem.column()] = true;
+        distancia[origem.row()][origem.column()] = 0;
 
         // Realiza o caminhamento BFS
         while (!fila.isEmpty()) {
             Tuple atual = fila.poll();
-            int atualLinha = atual.getRow();
-            int atualColuna = atual.getColumn();
+            int atualLinha = atual.row();
+            int atualColuna = atual.column();
             
             // Checar se a posição atual é o destino
-            if (atualLinha == destino.getRow() && atualColuna == destino.getColumn()) {
+            if (atualLinha == destino.row() && atualColuna == destino.column()) {
                 return distancia[atualLinha][atualColuna];
             }
 
@@ -124,7 +122,7 @@ public class MapaFenicios {
             }
         }
 
-        // Se o destino não for alcançável, retorne 0 para não ser considerado na soma total
+        // Se o destino não for alcançável, retorna 0 para não ser considerado na soma total
         return 0;
     }
 
@@ -169,23 +167,7 @@ public class MapaFenicios {
 /**
  * Classe para representar as coordenadas dos mapas em tuplas (row, column)
  */
-class Tuple {
-    private int row;
-    private int column;
-
-    public Tuple(int row, int column) {
-        this.row = row;
-        this.column = column;
-    }
-
-    public int getRow() {
-        return row;
-    }
-
-    public int getColumn() {
-        return column;
-    }
-
+record Tuple(int row, int column) {
     @Override
     public String toString() {
         return "(" + row + ", " + column + ")";
