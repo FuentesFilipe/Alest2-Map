@@ -3,29 +3,34 @@ import java.io.FileReader;
 import java.util.*;
 
 public class MapaFenicios {
-    private static char[][] readMapFile(String filePath) {
-        char[][] matrix = null;
+    /**
+     * Lê um arquivo de texto com os dados do mapa salva-os em uma matriz de chars
+     * @param caminhoArq caminho do arquivo de texto
+     * @return matriz de chars com os dados do arquivo
+     */
+    private static char[][] lerArquivoMapa(String caminhoArq) {
+        char[][] matriz = null;
 
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            String[] dimensions = br.readLine().split(" ");
-            int numRows = Integer.parseInt(dimensions[0]);
-            int numCols = Integer.parseInt(dimensions[1]);
+        try (BufferedReader br = new BufferedReader(new FileReader(caminhoArq))) {
+            String linha;
+            String[] dimensoes = br.readLine().split(" ");
+            int nroLinhas = Integer.parseInt(dimensoes[0]);
+            int nroColunas = Integer.parseInt(dimensoes[1]);
 
-            matrix = new char[numRows][numCols];
+            matriz = new char[nroLinhas][nroColunas];
             int row = 0;
 
-            while ((line = br.readLine()) != null) {
-                for (int col = 0; col < numCols; col++) {
-                    matrix[row][col] = line.charAt(col);
+            while ((linha = br.readLine()) != null) {
+                for (int col = 0; col < nroColunas; col++) {
+                    matriz[row][col] = linha.charAt(col);
                 }
                 row++;
             }
 
             // TESTE SE MATRIZ FICOU CERTA
-            for (int i = 0; i < matrix.length; i++) {
-                for (int j = 0; j < matrix[0].length; j++) {
-                    System.out.print(matrix[i][j] + " ");
+            for (int i = 0; i < matriz.length; i++) {
+                for (int j = 0; j < matriz[0].length; j++) {
+                    System.out.print(matriz[i][j] + " ");
                 }
                 System.out.println();
             }
@@ -34,137 +39,128 @@ public class MapaFenicios {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return matrix;
+        return matriz;
     }
 
-    private static TreeMap<Integer, Tuple> getPositions(char[][] matrix) {
+    /**
+     * Salva todas as posicoes dos portos em um dicionario, mantdestinoo a ordem numerica deles
+     * @param matriz matriz de chars com os dados do mapa
+     * @return dicionario com as posicoes dos portos
+     */
+    private static TreeMap<Integer, Tuple> getPositions(char[][] matriz) {
         TreeMap<Integer, Tuple> numberPositions = new TreeMap<>();
 
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                char element = matrix[i][j];
+        for (int i = 0; i < matriz.length; i++) {
+            for (int j = 0; j < matriz[i].length; j++) {
+                char element = matriz[i][j];
                 if (Character.isDigit(element)) {
                     int digit = Character.getNumericValue(element);
                     numberPositions.put(digit, new Tuple(i, j));
                 }
             }
         }
-
-//        // TESTE SE A MAPA DAS POSICOES FUNCIONOU
-//        for (Integer digit : numberPositions.keySet()) {
-//            Tuple position = numberPositions.get(digit);
-//            System.out.println("Number " + digit + " at position (" + position.getRow() + ", " + position.getColumn() + ")");
-//        }
-
         return numberPositions;
     }
 
-//    private static boolean isValid(int x, int y, char[][] matrix) {
-//        int numRows = matrix.length;
-//        int numCols = matrix[0].length;
-//
-//        // Check if the position is within the matrix boundaries
-//        return x >= 0 && x < numRows && y >= 0 && y < numCols;
-//    }
+    public static int achaMenorCaminho(char[][] matriz, Tuple origem, Tuple destino) {
+        int linhas = matriz.length;
+        int colunas = matriz[0].length;
 
-    public static int findShortestPath(char[][] matrix, Tuple start, Tuple end) {
-        int rows = matrix.length;
-        int columns = matrix[0].length;
+        int[][] distancia = new int[linhas][colunas];
+        boolean[][] visitados = new boolean[linhas][colunas];
 
-        int[][] distance = new int[rows][columns];
-        boolean[][] visited = new boolean[rows][columns];
-
-        // Initialize distance matrix with infinity
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < columns; j++) {
-                distance[i][j] = Integer.MAX_VALUE;
+        // inicializa a matriz de distancias com "infinito"
+        for (int i = 0; i < linhas; i++) {
+            for (int j = 0; j < colunas; j++) {
+                distancia[i][j] = Integer.MAX_VALUE;
             }
         }
 
-        // Define the directions (up, down, left, right)
+        // Definir as direções (cima, baixo, esquerda, direita)
         int[] dr = {-1, 1, 0, 0};
         int[] dc = {0, 0, -1, 1};
 
-        // Create a queue for BFS
-        Queue<Tuple> queue = new LinkedList<>();
+        // Criar a fila para o caminhamento BFS
+        Queue<Tuple> fila = new LinkedList<>();
 
-        // Enqueue the start position
-        queue.add(start);
-        visited[start.getRow()][start.getColumn()] = true;
-        distance[start.getRow()][start.getColumn()] = 0;
+        // Marcar a origem como visitada e com distancia 0
+        fila.add(origem);
+        visitados[origem.getRow()][origem.getColumn()] = true;
+        distancia[origem.getRow()][origem.getColumn()] = 0;
 
-        // Perform BFS
-        while (!queue.isEmpty()) {
-            Tuple current = queue.poll();
+        // Realiza o caminhamento BFS
+        while (!fila.isEmpty()) {
+            Tuple atual = fila.poll();
 
-            // Check if the current position is the destination
-            if (current.getRow() == end.getRow() && current.getColumn() == end.getColumn()) {
-                return distance[current.getRow()][current.getColumn()];
+            // Checar se a posição atual é o destino
+            if (atual.getRow() == destino.getRow() && atual.getColumn() == destino.getColumn()) {
+                return distancia[atual.getRow()][atual.getColumn()];
             }
 
-            // Explore the neighboring positions
+            // Explorar as posições vizinhas
             for (int k = 0; k < 4; k++) {
-                int newRow = current.getRow() + dr[k];
-                int newColumn = current.getColumn() + dc[k];
+                int novaLinha = atual.getRow() + dr[k];
+                int novaLColuna = atual.getColumn() + dc[k];
 
-                // Check if the neighboring position is valid and not visited
-                if (newRow >= 0 && newRow < rows && newColumn >= 0 && newColumn < columns
-                        && !visited[newRow][newColumn] && matrix[newRow][newColumn] != '*') {
+                // Checar se a posição vizinha é válida e não foi visitada
+                if (novaLinha >= 0 && novaLinha < linhas && novaLColuna >= 0 && novaLColuna < colunas
+                        && !visitados[novaLinha][novaLColuna] && matriz[novaLinha][novaLColuna] != '*') {
 
-                    // Update the distance and enqueue the neighboring position
-                    distance[newRow][newColumn] = distance[current.getRow()][current.getColumn()] + 1;
-                    visited[newRow][newColumn] = true;
-                    queue.add(new Tuple(newRow, newColumn));
+                    // Atualiza a distancia e adiciona a posição vizinha na fila
+                    distancia[novaLinha][novaLColuna] = distancia[atual.getRow()][atual.getColumn()] + 1;
+                    visitados[novaLinha][novaLColuna] = true;
+                    fila.add(new Tuple(novaLinha, novaLColuna));
                 }
             }
         }
 
-        // If the destination is not reachable, return -1 or some sentinel value
+        // Se o destino não for alcançável, retorne 0 para não ser considerado na soma total
         return 0;
     }
 
 
     public static void main(String[] args) {
         // salvar os dados do arquivo em uma matriz de chars
-        String filePath = "mapa1.txt";
-        char[][] matrix = readMapFile(filePath);
+        String caminhoArq = "mapa0.txt";
+        char[][] matriz = lerArquivoMapa(caminhoArq);
 
         // salvar todas as posicoes dos portos em uma lista
-        TreeMap<Integer, Tuple> numberPositions = getPositions(matrix);
+        TreeMap<Integer, Tuple> posicaoPortos = getPositions(matriz);
 
-        int totalDistance = 0;
-        // Run BFS for each number in numberPositions
+        int caminhoTotal = 0;
         int i = 1;
-        List<Integer> positions = new ArrayList<>(numberPositions.keySet());
-        Integer currentKey = positions.get(i - 1);
+        List<Integer> posicoes = new ArrayList<>(posicaoPortos.keySet());
+        Integer portoAtual = posicoes.get(0);
 
-        while (i < positions.size()) {
-            Integer nextKey = positions.get(i);
-            Tuple current = numberPositions.get(currentKey);
-            Tuple next = numberPositions.get(nextKey);
+        while (i < posicoes.size()) {
+            Integer proxPorto = posicoes.get(i);
+            Tuple atual = posicaoPortos.get(portoAtual);
+            Tuple proximo = posicaoPortos.get(proxPorto);
 
-            int shortestDistance = findShortestPath(matrix, current, next);
+            int menorCaminho = achaMenorCaminho(matriz, atual, proximo);
 
-            if (shortestDistance == 0) {
-                numberPositions.remove(nextKey);
-                positions.remove(i);
-                System.out.printf("Rota não encontrada de (%d, %d) até (%d, %d)\n", current.getRow(), current.getColumn(), next.getRow(), next.getColumn());
+            // se o menor caminho for 0, significa que não há caminho entre os portos
+            // então remove o porto atual da lista de portos e a proxima coordenada do dicionario
+            if (menorCaminho == 0) {
+                posicaoPortos.remove(proxPorto);
+                posicoes.remove(i);
+                System.out.printf("Rota não encontrada de (%d, %d) até (%d, %d)\n", atual.getRow(), atual.getColumn(), proximo.getRow(), proximo.getColumn());
             } else {
-                totalDistance += shortestDistance;
-                currentKey = nextKey;
+                caminhoTotal += menorCaminho;
+                portoAtual = proxPorto;
                 i++;
-                System.out.printf("Rota encontrada de (%d, %d) até (%d, %d)\n", current.getRow(), current.getColumn(), next.getRow(), next.getColumn());
+                System.out.printf("Rota encontrada de (%d, %d) até (%d, %d)\n", atual.getRow(), atual.getColumn(), proximo.getRow(), proximo.getColumn());
             }
         }
-
-
-
-        System.out.println(totalDistance);
+        System.out.println(caminhoTotal);
 
     }
 }
 
-// classe para representar uma tupla em Java
+/**
+ * Classe para representar as coordenadas dos mapas em tuplas (row, column)
+ * Usada para facilitar a implementação do BFS
+ */
 class Tuple {
     private int row;
     private int column;
