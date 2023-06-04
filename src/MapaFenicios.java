@@ -91,23 +91,25 @@ public class MapaFenicios {
         // Realiza o caminhamento BFS
         while (!fila.isEmpty()) {
             Tuple atual = fila.poll();
-
+            int atualLinha = atual.getRow();
+            int atualColuna = atual.getColumn();
+            
             // Checar se a posição atual é o destino
-            if (atual.getRow() == destino.getRow() && atual.getColumn() == destino.getColumn()) {
-                return distancia[atual.getRow()][atual.getColumn()];
+            if (atualLinha == destino.getRow() && atualColuna == destino.getColumn()) {
+                return distancia[atualLinha][atualColuna];
             }
 
             // Explorar as posições vizinhas
             for (int k = 0; k < 4; k++) {
-                int novaLinha = atual.getRow() + dr[k];
-                int novaLColuna = atual.getColumn() + dc[k];
+                int novaLinha = atualLinha + dr[k];
+                int novaLColuna = atualColuna + dc[k];
 
                 // Checar se a posição vizinha é válida e não foi visitada
                 if (novaLinha >= 0 && novaLinha < linhas && novaLColuna >= 0 && novaLColuna < colunas
                         && !visitados[novaLinha][novaLColuna] && matriz[novaLinha][novaLColuna] != '*') {
 
                     // Atualiza a distancia e adiciona a posição vizinha na fila
-                    distancia[novaLinha][novaLColuna] = distancia[atual.getRow()][atual.getColumn()] + 1;
+                    distancia[novaLinha][novaLColuna] = distancia[atualLinha][atualColuna] + 1;
                     visitados[novaLinha][novaLColuna] = true;
                     fila.add(new Tuple(novaLinha, novaLColuna));
                 }
