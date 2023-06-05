@@ -151,14 +151,14 @@ public class MapaFenicios {
             // se o menor caminho for 0, significa que não há caminho entre os portos,
             // então remove o porto atual da lista de portos e a proxima coordenada do dicionario
             if (menorCaminho == 0) {
+                System.out.printf("Rota não encontrada do Porto %s%s até Porto %s%s\n", portoAtual, atual, proxPorto, proximo);
                 posicaoPortos.remove(proxPorto);
                 posicoes.remove(i);
-                System.out.printf("Rota não encontrada de %s até %s\n", atual, proximo);
             } else {
+                System.out.printf("Rota encontrada do Porto %s%s até Porto %s%s\n", portoAtual, atual, proxPorto, proximo);
                 caminhoTotal += menorCaminho;
                 portoAtual = proxPorto;
                 i++;
-                System.out.printf("Rota encontrada de %s até %s\n", atual, proximo);
             }
         }
         // apos terminar de percorrer todos os portos, soma o caminho do ultimo porto até o primeiro
@@ -198,7 +198,7 @@ public class MapaFenicios {
                 String caminhoArq = CAMINHOS[opcao - 1];
                 char[][] matriz = lerArquivoMapa(caminhoArq);
                 int caminhoTotal = calculaCaminhoTotal(matriz);
-                System.out.println(caminhoTotal);
+                System.out.printf("Total de combustivel necessario para viagem: %d\n", caminhoTotal);
             }
         } while (opcao != SAIR);
     }
