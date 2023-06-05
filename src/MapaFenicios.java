@@ -126,6 +126,12 @@ public class MapaFenicios {
         return 0;
     }
 
+
+    /**
+     * Calcula o caminho total percorrido pelos portos do mapa de entrada
+     * @param matriz matriz de chars com os dados do mapa
+     * @return caminho total percorrido pelos fenicios
+     */
     private static int calculaCaminhoTotal(char[][] matriz) {
         // salvar todas as posicoes dos portos em um dicionario para manter a ordem numerica deles
         TreeMap<Integer, Tuple> posicaoPortos = getPosicoes(matriz);
