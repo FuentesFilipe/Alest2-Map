@@ -126,12 +126,7 @@ public class MapaFenicios {
         return 0;
     }
 
-
-    public static void main(String[] args) {
-        // salvar os dados do arquivo em uma matriz de chars
-        String caminhoArq = "mapa6.txt";
-        char[][] matriz = lerArquivoMapa(caminhoArq);
-
+    private static int calculaCaminhoTotal(char[][] matriz) {
         // salvar todas as posicoes dos portos em um dicionario para manter a ordem numerica deles
         TreeMap<Integer, Tuple> posicaoPortos = getPosicoes(matriz);
 
@@ -162,7 +157,44 @@ public class MapaFenicios {
         }
         // apos terminar de percorrer todos os portos, soma o caminho do ultimo porto até o primeiro
         caminhoTotal += achaMenorCaminho(matriz, posicaoPortos.get(portoAtual), posicaoPortos.get(1));
-        System.out.println(caminhoTotal);
+        return caminhoTotal;
+    }
+
+    /**
+     * Mostra o menu de opções
+     */
+    private static void mostraMenu() {
+        System.out.println("Escolha uma opção:");
+        System.out.println("0 - Sair");
+        System.out.println("1 - Mapa 1");
+        System.out.println("2 - Mapa 2");
+        System.out.println("3 - Mapa 3");
+        System.out.println("4 - Mapa 4");
+        System.out.println("5 - Mapa 500x1000");
+        System.out.println();
+    }
+
+    public static void main(String[] args) {
+        final int SAIR = 0;
+        final String[] CAMINHOS = {"mapa1.txt", "mapa2.txt", "mapa3.txt", "mapa4.txt", "mapa_500_1000.txt"};
+
+        int opcao;
+        Scanner sc = new Scanner(System.in);
+        do {
+            mostraMenu();
+            opcao = sc.nextInt();
+
+            if (opcao < SAIR || opcao > CAMINHOS.length) {
+                System.out.println("Opção inválida!!");
+            } else if (opcao == SAIR) {
+                System.out.println("Saindo...");
+            } else {
+                String caminhoArq = CAMINHOS[opcao - 1];
+                char[][] matriz = lerArquivoMapa(caminhoArq);
+                int caminhoTotal = calculaCaminhoTotal(matriz);
+                System.out.println(caminhoTotal);
+            }
+        } while (opcao != SAIR);
     }
 }
 
