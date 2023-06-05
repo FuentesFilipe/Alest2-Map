@@ -129,7 +129,7 @@ public class MapaFenicios {
 
     public static void main(String[] args) {
         // salvar os dados do arquivo em uma matriz de chars
-        String caminhoArq = "mapa0.txt";
+        String caminhoArq = "mapa6.txt";
         char[][] matriz = lerArquivoMapa(caminhoArq);
 
         // salvar todas as posicoes dos portos em um dicionario para manter a ordem numerica deles
@@ -160,6 +160,8 @@ public class MapaFenicios {
                 System.out.printf("Rota encontrada de %s até %s\n", atual, proximo);
             }
         }
+        // apos terminar de percorrer todos os portos, soma o caminho do ultimo porto até o primeiro
+        caminhoTotal += achaMenorCaminho(matriz, posicaoPortos.get(portoAtual), posicaoPortos.get(1));
         System.out.println(caminhoTotal);
     }
 }
